@@ -32,58 +32,37 @@
 
 class hPagination {
 	var $page_url;
-	var $rows_per_page = 20;
+	var $rows_per_page       = 20;
 	var $total_rows;
 	var $current_page;
-	var $seourl = false;
+	var $seourl              = false;				// true false
+	var $parameter           = 'page';
+	var $parameter_condition = '?'; 				// ? - &
+	var $message             = true;
+	var $class_page          = 'paginator';			// css class for container
+	var $class_button        = 'button';			// css class for link a
+	var $LNG_FISRT           = 'First';
+	var $LNG_LAST            = 'Last';
+	var $LNG_PREV            = 'Prev';
+	var $LNG_NEXT            = 'Next';
+	var $LNG_MSG_INTRO       = 'You are in Page:';
+	var $LNG_PAGE            = 'Page:';
+	var $LNG_PAGES           = 'Pages:';
+	var $LNG_OF              = 'of';
 	
-	//parameter
-	var $parameter = 'page';
-	var $parameter_condition = '?'; // ? - &
-	var $message = true;
+	public function display_pagination(){
 		
-	//class css
-	var $class_page = 'paginator';
-	var $class_button = 'button';
-	
-	//language
-	var $LNG_FISRT = 'First';
-	var $LNG_LAST = 'Last';
-	var $LNG_PREV = 'Prev';
-	var $LNG_NEXT = 'Next';
-	var $LNG_MSG_INTRO = 'You are in Page:';
-	var $LNG_PAGE = 'Page:';
-	var $LNG_PAGES = 'Pages:';
-	var $LNG_OF = 'of';
-	
-	function display_pagination(){
-		
-		if($this->message == true) {
 		echo '<div class="'.$this->class_page.'">';
-		echo ''.$this->LNG_MSG_INTRO.' <strong>'.$this->LNG_PAGES.' '.$this->current_page.' '.$this->LNG_OF.' '.$this->total_pages().'</strong></div>';
-		}
-		// releases so that the User make formatting
-		// first
+		if($this->message == true) echo $this->LNG_MSG_INTRO.' <strong>'.$this->LNG_PAGES.' '.$this->current_page.' '.$this->LNG_OF.' '.$this->total_pages().'</strong>';
 		$this->PageFirst();
-		// End first
-		
-		// Prev
 		$this->PagePrev();
-		// End prev
-		
 		$this->PageNumbers();
-				
-		// Next
 		$this->PageNext();
-		// End Next
-		
-		// Last
 		$this->PageLast();
-		// End Last
-
+		echo '</div>';
 	}
 	
-	function PageNumbers(){
+	public function PageNumbers(){
 		
 		if($this->total_pages()>=15){
 			$differ=7;
@@ -92,8 +71,6 @@ class hPagination {
 			elseif(($this->current_page-$differ)>0 && ($this->current_page+$differ)>$this->total_pages()) {$start=$this->total_pages()-($differ*2); $end=$this->total_pages();}
 		}
 		else { $start=1; $end=$this->total_pages(); }
-		
-		
 		
 		for($i=$start;$i<=$end;$i++)
 			{
@@ -107,8 +84,7 @@ class hPagination {
 			}		
 	}
 	
-	function PageFirst(){
-		// first
+	public function PageFirst(){
 		if($this->seourl) $first_page_link = $this->page_url.$this->parameter.'/1/';
 		else {
 			$first_page_parse = parse_url($this->page_url);
@@ -116,12 +92,9 @@ class hPagination {
 			else $first_page_link = $this->page_url.$this->parameter_condition.$this->parameter.'=1';
 		}
 		echo "<a href='".$first_page_link."' class=".$this->class_button.">".$this->LNG_FISRT."</a>";
-		// first
 	}
 
-
-	function PagePrev(){	
-		// Prev
+	public function PagePrev(){	
 		$prev_page_num = $this->current_page-1;
 		if($prev_page_num<1) $prev_page_num = 1;
 		
@@ -132,11 +105,9 @@ class hPagination {
 			else $prev_page_link = $this->page_url.$this->parameter_condition.$this->parameter.'='.$prev_page_num.'';
 		}
 		echo "<a href='".$prev_page_link."' class=".$this->class_button.">".$this->LNG_PREV."</a>";
-		// prev
 	}
 	
-	function PageNext(){
-	// Next
+	public function PageNext(){
 		$next_page_num = $this->current_page+1;
 		if($next_page_num>$this->total_pages()) $next_page_num = $this->total_pages();
 		
@@ -147,44 +118,34 @@ class hPagination {
 			else $next_page_link = $this->page_url.$this->parameter_condition.$this->parameter.'='.$next_page_num.'';
 		}
 		echo "<a href='".$next_page_link."' class=".$this->class_button.">".$this->LNG_NEXT."</a>";
-	// Next
 	}
 	
-	function PageLast(){
-	// Last
-	
+	public function PageLast(){	
 		if($this->seourl) $last_page_link = $this->page_url.$this->parameter.'/'.$this->total_pages().'/';
-		
-		else {
-			
+		else {	
 			$last_page_parse = parse_url($this->page_url);
 			if( isset($last_page_parse['query']) && $last_page_parse['query']!=NULL) $last_page_link = $this->page_url.'&'.$this->parameter.'='.$this->total_pages();	
 			else $last_page_link = $this->page_url.$this->parameter_condition.$this->parameter.'='.$this->total_pages();
-		
 		}
-		
 		echo "<a href='".$last_page_link."' class=".$this->class_button.">".$this->LNG_LAST."</a>";
-		
-		// Last
 	}
 	
-	function total_pages(){
+	public function total_pages(){
 		return ceil($this->total_rows/$this->rows_per_page);
 	}
 	
-	function current_page(){
-		
+	public function current_page(){
 		return $this->current_page;
 		
 	}
 	
-	function limit($limit_text=true){
+	public function limit($limit_text=true){
 		$this->current_page = intval($this->current_page);
 		if($this->current_page>1) $start = $this->rows_per_page * $this->current_page - $this->rows_per_page;
 		else $start = 0;
 		
 		if($limit_text) return ' LIMIT '.$start.','.$this->rows_per_page;
-		else return ' '.$start.','.$this->rows_per_page; // remove LIMIT text if set to false
+		else return ' '.$start.','.$this->rows_per_page;
 	}
 }
 ?>
