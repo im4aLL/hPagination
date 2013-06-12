@@ -228,7 +228,7 @@ class hPagination {
 		else $start = 0;
 		
 		if($limit_text) return ' LIMIT '.$start.','.$this->rows_per_page;
-		else return ' '.$start.','.$this->rows_per_page;
+		else return ' '.$start.','.$this->rows_per_page; // remove LIMIT text if set to false
 	}
 }
 ?>
